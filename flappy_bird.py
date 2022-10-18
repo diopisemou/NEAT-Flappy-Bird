@@ -29,6 +29,8 @@ pipe_img = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs","pipe.
 bg_img = pygame.transform.scale(pygame.image.load(os.path.join("imgs","bg.png")).convert_alpha(), (600, 900))
 bird_images = [pygame.transform.scale2x(pygame.image.load(os.path.join("imgs","bird" + str(x) + ".png"))) for x in range(1,4)]
 base_img = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs","base.png")).convert_alpha())
+buybtn = pygame.transform.scale(pygame.image.load(os.path.join("imgs","buybutton.png")).convert_alpha(), (10, 10))
+sellbtn = pygame.transform.scale(pygame.image.load(os.path.join("imgs","sellbutton.png")).convert_alpha(), (10, 10))
 
 gen = 0
 
@@ -246,6 +248,47 @@ class Base:
         win.blit(self.IMG, (self.x1, self.y))
         win.blit(self.IMG, (self.x2, self.y))
 
+class Button :
+    posX = 0
+    posY = 0
+    IMG = base_img
+
+    def __init__(self, y, btnimg):
+        """
+        Initialize the object
+        :param y: int
+        :return: None
+        """
+        posY = y
+        posX = 10
+        IMG = btnimg
+
+    def move(self):
+        """
+        move the bird so it looks like he moving
+        :return: None
+        """
+        self.posX = 10
+    
+    def draw(self, win):
+        """
+        Draw the button. This is two images that move together.
+        :param win: the pygame surface/window
+        :return: None
+        """
+        win.blit(self.IMG, (self.posX, self.posY))
+        
+class BuyButton(Button) :
+
+    def draw(self, win):
+        """
+        Draw the button. This is two images that move together.
+        :param win: the pygame surface/window
+        :return: None
+        """
+        win.blit(self.IMG, (self.posX, self.posY))
+
+
 
 def blitRotateCenter(surf, image, topleft, angle):
     """
@@ -261,7 +304,7 @@ def blitRotateCenter(surf, image, topleft, angle):
 
     surf.blit(rotated_image, new_rect.topleft)
 
-def draw_window(win, birds, pipes, base, score, gen, pipe_ind):
+def draw_window(win, birds, pipes, base, score, gen, pipe_ind, buy_btn):
     """
     draws the windows for the main game loop
     :param win: pygame window surface
@@ -303,6 +346,10 @@ def draw_window(win, birds, pipes, base, score, gen, pipe_ind):
     score_label = STAT_FONT.render("Alive: " + str(len(birds)),1,(255,255,255))
     win.blit(score_label, (10, 50))
 
+    # buybtn
+    score_label = STAT_FONT.render("Alive: " + str(len(birds)),1,(255,255,255))
+    buy_btn.draw(win)
+
     pygame.display.update()
 
 
@@ -330,6 +377,7 @@ def eval_genomes(genomes, config):
         ge.append(genome)
 
     base = Base(FLOOR)
+    buy_btn = BuyButton(-190, buybtn)
     pipes = [Pipe(700)]
     score = 0
 
@@ -398,7 +446,7 @@ def eval_genomes(genomes, config):
                 ge.pop(birds.index(bird))
                 birds.pop(birds.index(bird))
 
-        draw_window(WIN, birds, pipes, base, score, gen, pipe_ind)
+        draw_window(WIN, birds, pipes, base, score, gen, pipe_ind, buy_btn)
 
         # break if score gets large enough
         '''if score > 20:
